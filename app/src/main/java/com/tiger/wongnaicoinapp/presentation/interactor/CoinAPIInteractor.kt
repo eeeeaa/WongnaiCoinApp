@@ -10,12 +10,12 @@ import io.reactivex.schedulers.Schedulers
 
 class CoinAPIInteractor(private val getCoinListInterface: GetCoinListInterface):CoinAPIInteractorInterface {
     override fun getCoinList(
-        limit: Int,
-        offset: Int,
-        prefix: String,
-        symbols: String,
-        slugs: String,
-        ids: String
+        limit: Int?,
+        offset: Int?,
+        prefix: String?,
+        symbols: String?,
+        slugs: String?,
+        ids: String?
     ): Observable<PresCoinResponse> {
         return getCoinListInterface.getCoinList(limit, offset, prefix, symbols, slugs, ids)
             .observeOn(Schedulers.io())

@@ -1,58 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.view.MainActivity">
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/app_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:background="@drawable/custom_action_bar_background"
+        android:layout_height="88dp"
         android:layout_alignParentStart="true"
+        android:background="@drawable/custom_action_bar_background"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:layout_alignParentTop="true"
+        app:layout_anchorGravity="center"
+        app:layout_scrollFlags="scroll|enterAlways"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="4dp"
-            android:paddingEnd="50dp">
+            android:layout_height="match_parent"
+            android:paddingStart="16dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="20dp">
 
-            <ImageView
-                android:id="@+id/search_bar_hint_icon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_baseline_search_24"
-                app:tint="@color/lightgray" />
-
-            <EditText
-                android:id="@+id/search_bar_edit_text"
-                android:layout_width="1dp"
-                android:hint="  test"
-                android:textColorHint="@color/material_on_background_disabled"
-                android:background="@drawable/round_edittext"
-                android:inputType="textCapWords"
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/search_bar"
+                android:layout_width="343dp"
+                android:drawableLeft="@drawable/ic_baseline_search_24"
+                android:drawablePadding="10dp"
+                android:drawableTint="@color/darkgray"
+                android:layout_height="48dp"
                 android:layout_weight="1"
-                android:layout_height="40dp" />
+                android:background="@drawable/round_edittext"
+                app:queryHint="search"
+                android:inputType="textCapWords"
+                android:textColorHint="@color/darkgray" />
 
         </LinearLayout>
 
-    </androidx.appcompat.widget.Toolbar>
 
-    <androidx.core.widget.NestedScrollView
+    </androidx.appcompat.widget.Toolbar>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_below="@id/app_toolbar"
         android:layout_width="match_parent"
-        android:layout_marginTop="70dp"
         android:layout_height="match_parent">
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/main_coin_list"
-            android:layout_width="match_parent"
+        <FrameLayout
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-        </androidx.recyclerview.widget.RecyclerView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/main_coin_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </FrameLayout>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
-    </androidx.core.widget.NestedScrollView>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</RelativeLayout>

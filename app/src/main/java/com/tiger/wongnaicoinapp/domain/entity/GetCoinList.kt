@@ -12,12 +12,12 @@ import io.reactivex.schedulers.Schedulers
 
 class GetCoinList(private val fetchAPIInterface: FetchAPIInterface):GetCoinListInterface {
     override fun getCoinList(
-        limit: Int,
-        offset: Int,
-        prefix: String,
-        symbols: String,
-        slugs: String,
-        ids: String
+        limit: Int?,
+        offset: Int?,
+        prefix: String?,
+        symbols: String?,
+        slugs: String?,
+        ids: String?
     ): Observable<DomainCoinResponse> {
         return fetchAPIInterface
             .getDataFromApi(limit,offset,prefix,symbols,slugs,ids)
