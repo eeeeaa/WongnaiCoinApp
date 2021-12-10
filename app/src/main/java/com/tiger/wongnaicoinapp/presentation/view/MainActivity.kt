@@ -102,19 +102,19 @@ class MainActivity : AppCompatActivity() {
 
         })
     }
-    fun checkFilterWord(filter:String?,offset:Int?=null){
+    fun checkFilterWord(filterInput:String?,offset:Int?=null){
         //Seem to crash when search with symbols,slugs,or id when result is null
-
-        if(filter?.startsWith("symbol:".lowercase()) == true){
+        val filter = filterInput?.lowercase()
+        if(filter?.startsWith("symbol:") == true){
             val sub_filter = filter?.split("symbol:".lowercase())[1]
             mainModel.getCoinData(10,offset,null,sub_filter,null,null)
 
-        }else if(filter?.startsWith("slug:".lowercase()) == true){
-            val sub_filter = filter?.split("slug:".lowercase())[1]
+        }else if(filter?.startsWith("slug:") == true){
+            val sub_filter = filter?.split("slug:")[1]
             mainModel.getCoinData(10,offset,null,null,sub_filter,null)
 
-        }else if(filter?.startsWith("id:".lowercase()) == true){
-            val sub_filter = filter?.split("id:".lowercase())[1]
+        }else if(filter?.startsWith("id:") == true){
+            val sub_filter = filter?.split("id:")[1]
             mainModel.getCoinData(10,offset,null,null,null,sub_filter)
 
         }else{

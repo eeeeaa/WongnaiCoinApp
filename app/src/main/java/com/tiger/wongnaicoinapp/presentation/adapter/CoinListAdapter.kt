@@ -109,8 +109,11 @@ class CoinListAdapter(private val context: Context): RecyclerView.Adapter<Recycl
                             HtmlCompat.FROM_HTML_MODE_LEGACY
                         ).toString()
                     }
-                viewHolder.coinDescription.text = plainTextFromHTML
-
+                if(plainTextFromHTML.isNullOrBlank())
+                    viewHolder.coinDescription.text = "no information available"
+                else{
+                    viewHolder.coinDescription.text = plainTextFromHTML
+                }
             } else if (getItemViewType(position) == Type.SPECIAL_TYPE.typeIndex) {
                 val coin = coins[position]
                 val viewHolder = holder as CoinSpecialHolder
