@@ -25,7 +25,7 @@ class CoinListAdapter(private val context: Context): RecyclerView.Adapter<Recycl
     private val specialPos:Int = 5
     private val TAG = "CoinListAdapter"
     enum class Type(val typeIndex:Int){
-        EMPTY_TYPE(2),SPECIAL_TYPE(1),CONTENT_TYPE(0)
+        SPECIAL_TYPE(1),CONTENT_TYPE(0)
     }
     class CoinViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         var coinImg: ImageView
@@ -45,18 +45,10 @@ class CoinListAdapter(private val context: Context): RecyclerView.Adapter<Recycl
             coinName = itemView.findViewById(R.id.coin_name)
         }
     }
-    class CoinEmptyHolder(itemView:View):RecyclerView.ViewHolder(itemView){
-        var emptyName:TextView
-        init {
-            emptyName = itemView.findViewById(R.id.empty_name)
-        }
-    }
 
     override fun getItemViewType(position: Int): Int {
-        if(coins.isNullOrEmpty()){
-            return Type.EMPTY_TYPE.typeIndex
-        }else{
-            if (position in 0..4){
+        when{
+            position in 0..4 -> {
                 val temp = specialPos
                 return if((position+1) % temp == 0 && position != 0){
                     //special position
@@ -66,7 +58,7 @@ class CoinListAdapter(private val context: Context): RecyclerView.Adapter<Recycl
                     Type.CONTENT_TYPE.typeIndex
                 }
             }
-            else if(position > 4) {
+            position > 4  -> {
                 return if((position+1) % specialPos == 0){
                     //special position
                     Type.SPECIAL_TYPE.typeIndex
@@ -75,95 +67,88 @@ class CoinListAdapter(private val context: Context): RecyclerView.Adapter<Recycl
                     Type.CONTENT_TYPE.typeIndex
                 }
             }
-            else{
-                return Type.EMPTY_TYPE.typeIndex
+            else -> {
+                return Type.CONTENT_TYPE.typeIndex
             }
         }
-
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if(viewType == Type.CONTENT_TYPE.typeIndex){
             val v = LayoutInflater.from(parent.context).inflate(R.layout.main_adapter_layout, parent, false)
             CoinViewHolder(v)
-        }else if(viewType == Type.SPECIAL_TYPE.typeIndex){
+        }else{
             val v = LayoutInflater.from(parent.context).inflate(R.layout.main_adapter_layout_specialposition, parent, false)
             CoinSpecialHolder(v)
-        }else{
-            val v = LayoutInflater.from(parent.context).inflate(R.layout.main_adapter_layout_empty, parent, false)
-            CoinEmptyHolder(v)
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if(getItemViewType(position) == Type.CONTENT_TYPE.typeIndex && coins.isNotEmpty()){
-            val coin = coins[position]
-            Log.d(TAG, "contentType: ${coin.name}")
-            val viewHolder = holder as CoinViewHolder
-            val imageLoader = ImageLoader.Builder(context)
-                .crossfade(true)
-                .placeholder(R.drawable.ic_launcher_foreground)
-                .componentRegistry {
-                    add(SvgDecoder(context))
-                }
-                .build()
-            val request = ImageRequest.Builder(viewHolder.coinImg.context)
-                .data(coin.iconUrl)
-                .target(viewHolder.coinImg)
-                .build()
-            imageLoader.enqueue(request)
+        if(!coins.isNullOrEmpty()) {
+            if (getItemViewType(position) == Type.CONTENT_TYPE.typeIndex) {
+                val coin = coins[position]
+                val viewHolder = holder as CoinViewHolder
+                val imageLoader = ImageLoader.Builder(context)
+                    .crossfade(true)
+                    .placeholder(R.drawable.ic_launcher_foreground)
+                    .error(R.drawable.ic_launcher_foreground)
+                    .componentRegistry {
+                        add(SvgDecoder(context))
+                    }
+                    .build()
+                val request = ImageRequest.Builder(viewHolder.coinImg.context)
+                    .data(coin.iconUrl)
+                    .target(viewHolder.coinImg)
+                    .build()
+                imageLoader.enqueue(request)
 
-            viewHolder.coinName.text = coin.name
-            val plainTextFromHTML =
-                coin.description?.let { HtmlCompat.fromHtml(it,HtmlCompat.FROM_HTML_MODE_LEGACY).toString() }
-            viewHolder.coinDescription.text = plainTextFromHTML
+                viewHolder.coinName.text = coin.name
+                val plainTextFromHTML =
+                    coin.description?.let {
+                        HtmlCompat.fromHtml(
+                            it,
+                            HtmlCompat.FROM_HTML_MODE_LEGACY
+                        ).toString()
+                    }
+                viewHolder.coinDescription.text = plainTextFromHTML
 
-        }else if(getItemViewType(position) == Type.SPECIAL_TYPE.typeIndex && coins.isNotEmpty()){
-            val coin = coins[position]
-            Log.d(TAG, "specialType: ${coin.name}")
-            val viewHolder = holder as CoinSpecialHolder
-            val imageLoader = ImageLoader.Builder(context)
-                .crossfade(true)
-                .placeholder(R.drawable.ic_launcher_foreground)
-                .componentRegistry {
-                    add(SvgDecoder(context))
-                }
-                .build()
-            val request = ImageRequest.Builder(viewHolder.coinImg.context)
-                .data(coin.iconUrl)
-                .target(viewHolder.coinImg)
-                .build()
-            imageLoader.enqueue(request)
-            viewHolder.coinName.text = coin.name
-        }else{
-            Log.d(TAG, "emptyType")
-            val viewHolder = holder as CoinEmptyHolder
-            viewHolder.emptyName.text = "There's nothing here"
+            } else if (getItemViewType(position) == Type.SPECIAL_TYPE.typeIndex) {
+                val coin = coins[position]
+                val viewHolder = holder as CoinSpecialHolder
+                val imageLoader = ImageLoader.Builder(context)
+                    .crossfade(true)
+                    .placeholder(R.drawable.ic_launcher_foreground)
+                    .error(R.drawable.ic_launcher_foreground)
+                    .componentRegistry {
+                        add(SvgDecoder(context))
+                    }
+                    .build()
+                val request = ImageRequest.Builder(viewHolder.coinImg.context)
+                    .data(coin.iconUrl)
+                    .target(viewHolder.coinImg)
+                    .build()
+                imageLoader.enqueue(request)
+                viewHolder.coinName.text = coin.name
+            }
         }
     }
 
     override fun getItemCount(): Int {
         return coins.size
     }
-    fun getCoinsInList():Collection<Coin>{
+    fun getCoins():Collection<Coin>{
         return coins
     }
-
     fun clear(){
         coins.clear()
-        notifyDataSetChanged()
     }
     fun addResults(results: Collection<Coin>?) {
         if(!results.isNullOrEmpty()){
-            coins.addAll(results)
-            notifyDataSetChanged()
+           coins.addAll(results)
         }
     }
-
     fun add(coin:Coin) {
         coins.add(coin)
-        notifyItemInserted(coins.size - 1)
     }
-
 
     fun getItem(position: Int): Coin? {
         return coins[position]

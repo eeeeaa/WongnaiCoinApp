@@ -1,5 +1,6 @@
 package com.tiger.wongnaicoinapp.data.datasource
 import android.util.Log
+import com.tiger.wongnaicoinapp.BuildConfig
 import com.tiger.wongnaicoinapp.data.contract.FetchAPIInterface
 import com.tiger.wongnaicoinapp.data.model.Coin
 import io.reactivex.Observable
@@ -9,6 +10,12 @@ import java.net.SocketTimeoutException
 
 
 class FetchAPI(private val coinService: CoinService):FetchAPIInterface {
+    /*
+    * NOTE:
+    * - API v1 deprecated 31st december (need to use v1 for some missing parameter Ex. description,etc)
+    *
+    * */
+    val TAG = "Fetch API"
     override fun getDataFromApi(
         limit: Int?,
         offset: Int?,
@@ -23,11 +30,19 @@ class FetchAPI(private val coinService: CoinService):FetchAPIInterface {
             .map<CoinResponse> { res ->
                 Log.d("Fetch API success", res.toString())
                 val coins: List<Coin>? = res.data?.coins
-               if(!coins.isNullOrEmpty()){
-                   CoinResponseSuccess(coins)
-               }else{
-                   CoinResponseFailure(CoinError.EMPTY_NULL)
-               }
+                val emptylist:MutableList<Coin?> = ArrayList()
+                emptylist.add(null)
+                if(coins.isNullOrEmpty()){
+                    if(BuildConfig.DEBUG) Log.d(TAG, "getDataFromApi--Null: $coins")
+                    CoinResponseFailure(CoinError.EMPTY_NULL)
+                }else{
+                    if(BuildConfig.DEBUG) Log.d(TAG, "getDataFromApi--NonNull: $coins")
+                    if(coins == emptylist){
+                        CoinResponseFailure(CoinError.EMPTY_NULL)
+                    }else {
+                        CoinResponseSuccess(coins)
+                    }
+                }
 
             }.onErrorReturn {
                     throwable ->

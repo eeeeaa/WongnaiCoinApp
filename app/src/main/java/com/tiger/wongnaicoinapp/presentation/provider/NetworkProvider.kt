@@ -8,6 +8,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.Interceptor
 import okhttp3.Request
+import okhttp3.logging.HttpLoggingInterceptor
 
 
 class NetworkProvider(private val url:String,private val token:String) {
@@ -17,12 +18,16 @@ class NetworkProvider(private val url:String,private val token:String) {
             .baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        val client = OkHttpClient.Builder().addInterceptor { chain ->
+        val logging = HttpLoggingInterceptor()
+        logging.level = HttpLoggingInterceptor.Level.BODY
+        val client = OkHttpClient.Builder()
+        client.addInterceptor { chain ->
             val newRequest: Request = chain.request().newBuilder()
                 .addHeader("x-access-token", token)
                 .build()
             chain.proceed(newRequest)
         }
+        client.addInterceptor(logging)
         return builder.client(client.build()).build()
     }
 
