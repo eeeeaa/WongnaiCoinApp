@@ -31,10 +31,7 @@ import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
     /*
-    * TODO:
-    * - add buildConfig.DEBUG to all log
-    * - fix crash when coin list is null/empty
-    * - add unit/UI tests?
+    * View related logic
     *
     * */
     private lateinit var mainModel:MainViewModel
